@@ -23,6 +23,7 @@ test('passes automated WCAG checks', async ({ page }) => {
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
     .analyze();
   expect(results.violations).toEqual([]);
+  expect(results.incomplete.filter(({ id }) => id === 'aria-prohibited-attr')).toEqual([]);
 });
 
 test('skip link moves keyboard focus to main content', async ({ page }) => {
