@@ -41,6 +41,9 @@ if (!packageJson.includes('wrangler pages deploy dist --project-name arca-web3')
 if (!readme.includes('Cloudflare Pages')) throw new Error('README must document the Pages architecture');
 if (!headers.includes("Content-Security-Policy: default-src 'self'")) throw new Error('CSP is missing');
 if (!headers.includes('Strict-Transport-Security: max-age=31536000')) throw new Error('HSTS is missing');
+if (!headers.includes('Cache-Control: public, max-age=0, must-revalidate, no-transform')) {
+  throw new Error('HTML must opt out of Cloudflare script injection');
+}
 
 const forbidden = ['124,000 users', 'owns Hypersnap', 'all traffic is human'];
 for (const claim of forbidden) {
