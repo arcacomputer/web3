@@ -12,8 +12,8 @@
     "check:links": "node scripts/check-links.mjs",
     "build": "astro build",
     "test:e2e": "playwright test",
-    "preview": "wrangler dev",
-    "deploy": "npm run build && wrangler deploy"
+    "preview": "npm run build && wrangler pages dev dist",
+    "deploy": "npm run build && wrangler pages deploy dist --project-name arca-web3 --branch main"
   },
   "dependencies": {
     "astro": "7.2.7"

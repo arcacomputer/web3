@@ -5,7 +5,8 @@ const page = readFileSync(new URL('../src/pages/index.astro', import.meta.url), 
 const layout = readFileSync(new URL('../src/layouts/BaseLayout.astro', import.meta.url), 'utf8');
 const wrangler = readFileSync(new URL('../wrangler.jsonc', import.meta.url), 'utf8');
 const headers = readFileSync(new URL('../public/_headers', import.meta.url), 'utf8');
-const worker = readFileSync(new URL('../src/worker.mjs', import.meta.url), 'utf8');
+const packageJson = readFileSync(new URL('../package.json', import.meta.url), 'utf8');
+const readme = readFileSync(new URL('../README.md', import.meta.url), 'utf8');
 
 const required = [
   'WarpletScan',
@@ -28,15 +29,16 @@ if (!page.includes('49,060')) throw new Error('WarpletScan evidence count is mis
 if (!page.includes('Alchemy')) throw new Error('Current Alchemy usage is missing');
 if (!layout.includes('og.png')) throw new Error('Social image metadata is missing');
 if (!layout.includes('canonical')) throw new Error('Canonical metadata is missing');
-if (!wrangler.includes('"workers_dev": false')) throw new Error('workers.dev must remain disabled');
-if (!wrangler.includes('"preview_urls": false')) throw new Error('preview URLs must remain disabled');
-if (!wrangler.includes('"pattern": "web3.arca.computer"')) throw new Error('Custom domain is missing');
-if (!wrangler.includes('"custom_domain": true')) throw new Error('Custom domain route is not explicit');
-if (!wrangler.includes('"not_found_handling": "404-page"')) throw new Error('Custom 404 handling is missing');
-if (!wrangler.includes('"main": "./src/worker.mjs"')) throw new Error('Explicit Worker entrypoint is missing');
-if (!wrangler.includes('"binding": "ASSETS"')) throw new Error('Static asset binding is missing');
-if (!wrangler.includes('"run_worker_first": true')) throw new Error('Worker-first routing is missing');
-if (!worker.includes('env.ASSETS.fetch(request)')) throw new Error('Worker must delegate to static assets');
+if (!wrangler.includes('"name": "arca-web3"')) throw new Error('Pages project name is missing');
+if (!wrangler.includes('"pages_build_output_dir": "./dist"')) throw new Error('Pages output directory is missing');
+if (wrangler.includes('"main"') || wrangler.includes('"assets"') || wrangler.includes('"routes"')) {
+  throw new Error('Worker-only configuration must not remain in the Pages contract');
+}
+if (!packageJson.includes('wrangler pages dev dist')) throw new Error('Pages preview command is missing');
+if (!packageJson.includes('wrangler pages deploy dist --project-name arca-web3')) {
+  throw new Error('Pages deployment command is missing');
+}
+if (!readme.includes('Cloudflare Pages')) throw new Error('README must document the Pages architecture');
 if (!headers.includes("Content-Security-Policy: default-src 'self'")) throw new Error('CSP is missing');
 if (!headers.includes('Strict-Transport-Security: max-age=31536000')) throw new Error('HSTS is missing');
 
